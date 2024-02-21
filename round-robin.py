@@ -7,7 +7,8 @@ class RR:
 
     #begin round robin sequence
     def begin(self):
-        for i in range(0, len(processes)):
+        for i in range(0, len(self.processes)):
+            #
             #if more than full time quantum is remaining in process
                 #round robin time elapsed += quantum
                 #process updates - start time -1 check, ..... what else?
@@ -17,18 +18,43 @@ class RR:
                 #incrememnt time elapsed with time reamining in process
                 #process updates - start time -1 check, ..... what else?
             #increment time on RR
+            #-------------------------------------------------------
 
-            #processes correctly instantiated?
-            print(processes[i].id)
-    def testStartTimes():
-        for i in range(0, len(processes)):
-            print(processes[i].startTime)
+            process = self.processes[i]
+            #if process hasn't arrived yet, continue
+            if process.arrivalTime > self.timeElapsed:
+                continue
+            #check if process has begun yet
+            if process.startTime < 0 :
+                process.startTime = self.timeElapsed
+            #if more than full time quantum is remaining in process & process not completed
+            if process.serviceTime > 10 and process.serviceTime != 0:
+                self.timeElapsed += self.timeQuantum
+                process.incrementTurnAroundTime(self.timeQuantum)
+                print(process.remainingServiceTime)
+                process.decrementServiceTime(self.timeQuantum)
+                print(process.remainingServiceTime)
+
+
+
+    def printProcesses(self): 
+        for i in range(0, len(self.processes)):
+            process = self.processes[i]
+            print(f"Process id: {process.id}")
+            print(f"Process service  time: {process.serviceTime}")
+            print(f"Process arrival: {process.arrivalTime}\n")
+            print(f"Process start time: {process.startTime}")
+            print(f"Process remaining service time: {process.remainingServiceTime}")
+
+            print(f"-------------------------------------\n")
+            
 
 class Process:
     def __init__(self, id, serviceTime, arrivalTime):
         self.id = id
         self.serviceTime = serviceTime
         self.arrivalTime = arrivalTime
+        self.remainingServiceTime = serviceTime
         self.startTime = -1
         self.initialWaitTime = 0
         self.endTime = 0
@@ -40,14 +66,16 @@ class Process:
         self.startTime = time
     def setInitialWaitTime(self, time):
         self.initialWaitTime = time
-    
-    #incremental counts
     def setEndTime(self, time):
         self.selfEndTime += time
+
+    #increment / decrement funcs
     def incrementTotalWaitTime(self, time):
         self.totalWaitTime += time
     def incrementTurnAroundTime(self, time):
         self.turnAroundTime += time
+    def decrementServiceTime(self, time):
+        self.remainingServiceTime -= time
     
 #set up variables
 processes = []
@@ -64,6 +92,7 @@ for process in data:
     processes.append(Process(process["id"], process["servetime"], process["arrivaltime"]))
 
 #instantiate w/ time quantum 0, processes and 0 context switch
-roundRobin = RR(0,processes,0)
-#
+roundRobin = RR(10,processes,0)
+
 roundRobin.begin()
+roundRobin.printProcesses()
