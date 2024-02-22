@@ -14,49 +14,40 @@ class RoundRobin:
         while len(self.queue) > 0:
             queueLength = len(self.queue)
             for i in range(0, queueLength):
-                
-                #
-                #if more than full time quantum is remaining in process
-                    #round robin time elapsed += quantum
-                    #process updates - start time -1 check, ..... what else?
-                #if process finished
-                    #
-                #if less than full time quantum is remaining in process
-                    #incrememnt time elapsed with time reamining in process
-                    #process updates - start time -1 check, ..... what else?
-                #increment time on RR
-
-                #-------------------------------------------------------
 
                 process = self.queue[i]
-
-                
+    
                 #if process hasn't arrived yet, continue
                 if process.arrivalTime > self.timeElapsed:
                     continue
 
-                #check if process is ready, set start time
+                #check if process is ready, set start time, set initial wait time
                 if process.startTime < 0 :
-                    process.startTime = self.timeElapsed
+                    process.setStartTime(self.timeElapsed)
+
                 
                 #check for partial time quantum
                 if process.remainingServiceTime < self.timeQuantum and process.remainingServiceTime >= 0:
-                    #decrement remaining service time by difference of time quantum
-                    process.decrementServiceTime(self.timeQuantum - process.remainingServiceTime)
+                    #decrement remaining service time by difference of time quantum, record time in RR
+                    process.decrementRemainingServiceTime(self.timeQuantum - process.remainingServiceTime)
+                    self.incrementTimeElapsed(self.timeQuantum - process.remainingServiceTime)
 
 
-                #if more than full time quantum is remaining in process & process not completed
+                #if more than or equal to full time quantum is remaining in process & process not completed, record time in RR
                 if process.remainingServiceTime >= self.timeQuantum and process.remainingServiceTime >= 0:
-                    self.timeElapsed += self.timeQuantum
-                    process.decrementServiceTime(self.timeQuantum)
-                #check for partial time quantum
+                    process.decrementRemainingServiceTime(self.timeQuantum)
+                    self.incrementTimeElapsed(self.timeQuantum)
+                
                 
                 #process ended? pop from queue
                 if process.remainingServiceTime == 0:
+                    process.setEndTime(self.timeElapsed)
                     self.removeFromQueue(process.id)
                     break
 
-
+        #finally, loop over processes to update their data
+        for process in self.processes:
+            process.calculateMetrics()
 
 
     #set queue, queue is processes as they are ran, processes are beginning processes
@@ -70,8 +61,9 @@ class RoundRobin:
                 if process.id == id:
                     self.queue.pop(i)
                     break
-
-                
+    
+    def incrementTimeElapsed(self, time):
+        self.timeElapsed += time
 
     def printProcesses(self): 
         for i in range(0, len(self.processes)):
@@ -85,8 +77,11 @@ class RoundRobin:
             print(f"Process totalWaitTime: {process.totalWaitTime}")
             print(f"Process turnAroundTime: {process.turnAroundTime}")
             print(f"-------------------------------------\n")
-            
 
+    def createTable():
+        #use pandas or prettytable to loop through data and output data for all processes 
+        return
+    
 class Process:
     def __init__(self, id, serviceTime, arrivalTime):
         self.id = id
@@ -100,34 +95,38 @@ class Process:
         #decremented value of service time
         self.remainingServiceTime = serviceTime
 
-        #negative for readable if statement, can't be 0
+        #negative for readable if statement, shouldn't be 0
         self.startTime = -1
 
-        #start time - wait time, how long process waited in queue
+        #start time - arrival time - how long process waited in queue
         self.initialWaitTime = 0
 
         #when process ended
         self.endTime = 0
 
-        #how long did the process wait before being finished
-        # endtime - servicetime - arivaltime
+        ##endtime - servicetime - arivaltime - how long did the process idle total
         self.totalWaitTime = 0
 
-        #end time - arrival time, should be calculated at the end
+        #end time - arrival time, how long did the whole thing take?
         self.turnAroundTime = 0
 
-    #setters
+    #setters and calculations
     def setStartTime(self, time):
         self.startTime = time
     def setInitialWaitTime(self, time):
         self.initialWaitTime = time
     def setEndTime(self, time):
-        self.selfEndTime = time
+        self.endTime = time
 
-    #increment / decrement funcs
-    def incrementTotalWaitTime(self, time):
-        self.totalWaitTime += time
-    def incrementTurnAroundTime(self, time):
-        self.turnAroundTime += time
-    def decrementServiceTime(self, time):
+    def decrementRemainingServiceTime(self, time):
         self.remainingServiceTime -= time
+
+    def calculateMetrics(self):
+        #start time - arrival time -  how long process waited in queue
+        self.initialWaitTime = self.startTime - self.arrivalTime
+
+        #endtime - servicetime - arivaltime - how long did the process idle total
+        self.totalWaitTime = self.endTime - self.serviceTime - self.arrivalTime
+
+        #end time - arrival time, how long did the whole thing take?
+        self.turnAroundTime = self.endTime - self.arrivalTime
