@@ -1,13 +1,14 @@
 class RoundRobin:
-    def __init__(self, timeQuantum, processes, contextSwitch):
+    def __init__(self, timeQuantum, data, contextSwitch):
         self.timeQuantum = timeQuantum
-        self.processes = processes
+        self.processes = self.intializeProcesses(data)
         self.contextSwitch = contextSwitch
         self.timeElapsed = 0
+        
         self.queue = []
 
-    #begin round robin sequence
-    def begin(self):
+    #run round robin sequence
+    def run(self):
         #initialize queue
         self.setQueue()
 
@@ -54,6 +55,12 @@ class RoundRobin:
     def setQueue(self):
         for process in self.processes:
             self.queue.append(process)
+
+    def intializeProcesses(self, data):
+        processes = []
+        for process in data:
+            processes.append(Process(process["id"], process["servetime"], process["arrivaltime"]))
+        return processes
 
     #enumerate queue, remove by id
     def removeFromQueue(self, id):
