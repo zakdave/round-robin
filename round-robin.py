@@ -8,9 +8,8 @@ data = [
     {"id": 5,"servetime": 45,"arrivaltime":85}
 ]
 
-#instantiate w/ time quantum 0, processes and 0 context switch
-roundRobin = RoundRobin(10, data, 0)
-roundRobin.run()
+
+
 roundRobin = RoundRobin(10, data, 2)
 roundRobin.run()
 

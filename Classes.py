@@ -93,10 +93,6 @@ class RoundRobin:
     def incrementByContext(self):
         self.timeElapsed += self.contextSwitch
 
-    #should only be ran once    
-    def decrementByContext(self):
-        self.timeElapsed -= self.contextSwitch
-
     def consoleDebug(self): 
         for i in range(0, len(self.processes)):
             process = self.processes[i]
@@ -113,17 +109,21 @@ class RoundRobin:
     def createTable(self):
         table = Table(title="CSC440 - Round Robin")
         table.add_column("Process Id", justify="right")
+        table.add_column("Service Time", justify="right")
+        table.add_column("Arrival Time", justify="right")
         table.add_column("Start Time", justify="right")
-        table.add_column("Initial Wait Time", justify="right")
         table.add_column("End Time", justify="right")
+        table.add_column("Initial Wait Time", justify="right")
         table.add_column("Total Wait Time", justify="right")
         table.add_column("Turn Around Time", justify="right")
         for process in self.processes:
             table.add_row(
                 f"{process.id}",
+                f"{process.serviceTime}",
+                f"{process.arrivalTime}",
                 f"{process.startTime}",
-                f"{process.initialWaitTime}", 
                 f"{process.endTime}", 
+                f"{process.initialWaitTime}",
                 f"{process.totalWaitTime}",
                 f"{process.turnAroundTime}"
             )
@@ -173,7 +173,7 @@ class Process:
         self.initialWaitTime = self.startTime - self.arrivalTime
 
         #endtime - servicetime - arivaltime - how long did the process idle total
-        self.totalWaitTime = self.endTime - self.serviceTime - self.arrivalTime
+        self.totalWaitTime = self.endTime - self.startTime - self.serviceTime + self.initialWaitTime
 
         #end time - arrival time, how long did the whole thing take?
         self.turnAroundTime = self.endTime - self.arrivalTime
