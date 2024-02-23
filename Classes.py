@@ -30,19 +30,25 @@ class RoundRobin:
                 if process.remainingServiceTime < self.timeQuantum and process.remainingServiceTime >= 0:
                     #decrement remaining service time by difference of time quantum, record time in RR
                     process.decrementRemainingServiceTime(self.timeQuantum - process.remainingServiceTime)
-                    self.incrementTimeElapsed(self.timeQuantum - process.remainingServiceTime)
+                    self.incrementByQuantum(self.timeQuantum - process.remainingServiceTime)
+                    self.incrementByContext()
 
 
                 #if more than or equal to full time quantum is remaining in process & process not completed, record time in RR
-                if process.remainingServiceTime >= self.timeQuantum and process.remainingServiceTime >= 0:
+                if process.remainingServiceTime >= self.timeQuantum:
                     process.decrementRemainingServiceTime(self.timeQuantum)
-                    self.incrementTimeElapsed(self.timeQuantum)
+                    self.incrementByQuantum(self.timeQuantum)
+                    self.incrementByContext()
                 
-                
-                #process ended? pop from queue
+                #pop from queue
                 if process.remainingServiceTime == 0:
                     process.setEndTime(self.timeElapsed)
                     self.removeFromQueue(process.id)
+
+                    #increment time by context if not last process in queue
+                    if len(self.queue) > 1:
+                            self.incrementByContext()
+                            break
                     break
 
         #finally, loop over processes to update their data
@@ -72,8 +78,11 @@ class RoundRobin:
                     self.queue.pop(i)
                     break
     
-    def incrementTimeElapsed(self, time):
+    def incrementByQuantum(self, time):
         self.timeElapsed += time
+    
+    def incrementByContext(self):
+        self.timeElapsed += self.contextSwitch
 
     def printProcesses(self): 
         for i in range(0, len(self.processes)):
