@@ -1,20 +1,19 @@
+from rich.console import Console
+from rich.table import Table
+
 class RoundRobin:
     def __init__(self, timeQuantum, data, contextSwitch):
         self.timeQuantum = timeQuantum
-        self.processes = self.intializeProcesses(data)
+        self.processes = self.setProcesses(data)
         self.contextSwitch = contextSwitch
         self.timeElapsed = 0
-        
-        self.queue = []
+        self.queue = self.setQueue(self.processes)
 
     #run round robin sequence
     def run(self):
-        #initialize queue
-        self.setQueue()
 
         while len(self.queue) > 0:
-            queueLength = len(self.queue)
-            for i in range(0, queueLength):
+            for i in range(0, len(self.queue)):
 
                 process = self.queue[i]
     
@@ -49,14 +48,18 @@ class RoundRobin:
         #finally, loop over processes to update their data
         for process in self.processes:
             process.calculateMetrics()
+        #output results
+        self.createTable()
 
 
-    #set queue, queue is processes as they are ran, processes are beginning processes
-    def setQueue(self):
-        for process in self.processes:
-            self.queue.append(process)
+    #set queue, RR.queue holds the processes as they run whereas RR.processes contains all processes throughout the RR lifecycle
+    def setQueue(self, processes):
+        queue = []
+        for process in processes:
+            queue.append(process)
+        return queue
 
-    def intializeProcesses(self, data):
+    def setProcesses(self, data):
         processes = []
         for process in data:
             processes.append(Process(process["id"], process["servetime"], process["arrivaltime"]))
@@ -85,9 +88,26 @@ class RoundRobin:
             print(f"Process turnAroundTime: {process.turnAroundTime}")
             print(f"-------------------------------------\n")
 
-    def createTable():
-        #use pandas or prettytable to loop through data and output data for all processes 
-        return
+    def createTable(self):
+        table = Table(title="CSC440 - Round Robin")
+        table.add_column("Process Id", justify="right")
+        table.add_column("Start Time", justify="right")
+        table.add_column("Initial Wait Time", justify="right")
+        table.add_column("End Time", justify="right")
+        table.add_column("Total Wait Time", justify="right")
+        table.add_column("Turn Around Time", justify="right")
+        for process in self.processes:
+            table.add_row(
+                f"{process.id}",
+                f"{process.startTime}",
+                f"{process.initialWaitTime}", 
+                f"{process.endTime}", 
+                f"{process.totalWaitTime}",
+                f"{process.turnAroundTime}"
+            )
+
+        console = Console()
+        console.print(table)
     
 class Process:
     def __init__(self, id, serviceTime, arrivalTime):
@@ -102,7 +122,7 @@ class Process:
         #decremented value of service time
         self.remainingServiceTime = serviceTime
 
-        #negative for readable if statement, shouldn't be 0
+        #process may start at 0 so
         self.startTime = -1
 
         #start time - arrival time - how long process waited in queue
@@ -120,8 +140,6 @@ class Process:
     #setters and calculations
     def setStartTime(self, time):
         self.startTime = time
-    def setInitialWaitTime(self, time):
-        self.initialWaitTime = time
     def setEndTime(self, time):
         self.endTime = time
 

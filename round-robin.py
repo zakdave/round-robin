@@ -10,6 +10,5 @@ data = [
 
 #instantiate w/ time quantum 0, processes and 0 context switch
 roundRobin = RoundRobin(10, data, 0)
-
 roundRobin.run()
-roundRobin.printProcesses()
+
