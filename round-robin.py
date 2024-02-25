@@ -8,8 +8,11 @@ data = [
     {"id": 5,"servetime": 45,"arrivaltime":85}
 ]
 
-
-
-roundRobin = RoundRobin(10, data, 2)
+roundRobin = RoundRobin(10, data, 0)
 roundRobin.run()
+
+roundRobin = RoundRobin(10, data, 10)
+roundRobin.run()
+
+
 
