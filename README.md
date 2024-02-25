@@ -20,7 +20,7 @@ Note: This implementation checks the arrival time of each process before it star
 
 By itself, this is not very useful. Future revisions could look at comparing a remaining time to quantum + context ratio that can complete near complete processes. Although, I believe this may make the overall scheduling more efficent in theory, it would create too much overhead in practice. 
 
-![Context 0](./results/gantt-0-context.PNG) ![Context 10](./results/gantt-0-context.PNG)
+![Context 0](./results/gantt-0-context.PNG) ![Context 10](./results/gantt-10-context.PNG)
 
 Round Robin serves as a FCFS algorithm by executing the inner loop of the of the queue. Different methods of implementation can create surprisingly different results. The first images shows a 0 context time, and a time quantum of 10. In Figure, p3 should switch to p4, however the loop breaks off and the queue restarts from the beginning. This behavior could be avoided by maintaining a circular queue on the Round Robin class. 
 
