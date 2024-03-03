@@ -8,8 +8,6 @@ class RoundRobin:
         self.contextSwitch = contextSwitch
         self.timeElapsed = 0
         self.queue = self.setQueue(self.processes)
-        self.averageWT = 0
-        self.averageTAT = 0
 
     #run round robin sequence
     def run(self):
@@ -30,19 +28,19 @@ class RoundRobin:
                 if process.remainingServiceTime < self.timeQuantum:
 
                     #decrement remaining service time by difference of time quantum,
-                    #print(f'p{process.id} starting at {self.timeElapsed}')
+                    print(f'p{process.id} starting at {self.timeElapsed}')
                     partialTimeQuantum = self.timeQuantum - process.remainingServiceTime
 
                     process.decrementRemainingServiceTime(partialTimeQuantum)
                     self.incrementByQuantum(partialTimeQuantum)
 
-                    #print(f'p{process.id} ending at {self.timeElapsed}')
+                    print(f'p{process.id} ending at {self.timeElapsed}')
                     if process.remainingServiceTime == 0:
                         process.setEndTime(self.timeElapsed)
 
                 #if more than or equal to full time quantum is remaining in process & process not completed, record time in RR
                 if process.remainingServiceTime >= self.timeQuantum:
-                    #print(f'p{process.id} starting at {self.timeElapsed}')
+                    print(f'p{process.id} starting at {self.timeElapsed}')
                     
                     process.decrementRemainingServiceTime(self.timeQuantum)
                     self.incrementByQuantum(self.timeQuantum)
@@ -50,11 +48,11 @@ class RoundRobin:
                     #check for process ended
                     if process.remainingServiceTime == 0:
                         process.setEndTime(self.timeElapsed)
-                    #print(f'p{process.id} ending at {self.timeElapsed} process has {process.remainingServiceTime} remaining')
+                    print(f'p{process.id} ending at {self.timeElapsed} process has {process.remainingServiceTime} remaining')
 
                 if len(self.queue) > 1:
                         self.incrementByContext()
-                        #print(f'context switch ending at {self.timeElapsed}')
+                        print(f'context switch ending at {self.timeElapsed}')
 
                 #pop from queue
                 if process.remainingServiceTime == 0:
