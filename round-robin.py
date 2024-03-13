@@ -9,10 +9,10 @@ data = [
 ]
 
 roundRobin = RoundRobin(10, data, 0)
-roundRobin.run()
+roundRobin.runRR()
 
 roundRobin = RoundRobin(10, data, 10)
-roundRobin.run()
+roundRobin.runRR()
 
 
 

@@ -31,9 +31,6 @@ for index, arrivalTime in enumerate(times["arrivalTimes"]):
     process["serviceTime"] = times["serviceTimes"][index]
     data.append(process)
 
-
-print(data)
-
 #given quantum 2, cs 0
 roundRobin = RoundRobin(2, data, 1)
-roundRobin.run()
+roundRobin.runRR()

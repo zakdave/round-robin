@@ -7,11 +7,14 @@ class RoundRobin:
         self.processes = self.setProcesses(data)
         self.contextSwitch = contextSwitch
         self.timeElapsed = 0
-        self.queue = self.setQueue(self.processes)
+        self.queue = []
 
     #run round robin sequence
-    def run(self):
-        
+    def runRR(self):
+
+        #set queue to all process for traditional rr
+        self.queue = self.setQueue(self.processes)
+
         #while a queue exists
         while self.queue:
 
@@ -21,7 +24,7 @@ class RoundRobin:
                 if process.arrivalTime > self.timeElapsed:
                     unarrivedCount += 1
             if unarrivedCount == len(self.queue):
-                print('time elapsed: 1')
+                #print('time elapsed: 1')
                 self.incrementClock(1)
 
             #begin looping through queue
@@ -40,19 +43,19 @@ class RoundRobin:
                 if process.remainingServiceTime < self.timeQuantum:
 
                     #decrement remaining service time by difference of time quantum,
-                    print(f'p{process.id} starting at {self.timeElapsed}')
+                    #print(f'p{process.id} starting at {self.timeElapsed}')
                     partialTimeQuantum = process.remainingServiceTime
 
                     process.decrementRemainingServiceTime(partialTimeQuantum)
                     self.incrementClock(partialTimeQuantum)
 
-                    print(f'p{process.id} ending at {self.timeElapsed}')
+                    #print(f'p{process.id} ending at {self.timeElapsed}')
                     if process.remainingServiceTime == 0:
                         process.setEndTime(self.timeElapsed)
 
                 #if more than or equal to full time quantum is remaining in process & process not completed, record time in RR
                 if process.remainingServiceTime >= self.timeQuantum:
-                    print(f'p{process.id} starting at {self.timeElapsed}')
+                    #print(f'p{process.id} starting at {self.timeElapsed}')
                     
                     process.decrementRemainingServiceTime(self.timeQuantum)
                     self.incrementClock(self.timeQuantum)
@@ -60,11 +63,11 @@ class RoundRobin:
                     #check for process ended
                     if process.remainingServiceTime == 0:
                         process.setEndTime(self.timeElapsed)
-                    print(f'p{process.id} ending at {self.timeElapsed} process has {process.remainingServiceTime} remaining')
+                    #print(f'p{process.id} ending at {self.timeElapsed} process has {process.remainingServiceTime} remaining')
 
                 if len(self.queue) > 1:
                         self.incrementClock(self.contextSwitch)
-                        print(f'context switch ending at {self.timeElapsed}')
+                        #print(f'context switch ending at {self.timeElapsed}')
 
                 #pop from queue
                 if process.remainingServiceTime == 0:
@@ -77,6 +80,15 @@ class RoundRobin:
 
         #output results
         self.createTable()
+
+    def runSQRR(self):
+        #set queue for arrived processes, sort based on ST / RST
+
+        #determine QT
+        #if time quantum -1, determine time quantum based on queue processes current burst times / 2
+
+        #execute processes in queue and exit
+        return
 
     #set queue, RR.queue holds the processes as they run whereas RR.processes contains all processes throughout the RR lifecycle
     def setQueue(self, processes):
@@ -155,6 +167,9 @@ class Process:
 
         #end time - arrival time, how long did the whole thing take?
         self.turnAroundTime = 0
+
+        #sent to queue yet?
+        self.queued = False
 
     #setters and calculations
     def setStartTime(self, time):
