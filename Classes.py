@@ -12,7 +12,19 @@ class RoundRobin:
     #run round robin sequence
     def run(self):
         
+        #while a queue exists
         while self.queue:
+
+            #increment clock when idle
+            unarrivedCount = 0
+            for process in self.queue:
+                if process.arrivalTime > self.timeElapsed:
+                    unarrivedCount += 1
+            if unarrivedCount == len(self.queue):
+                print('time elapsed: 1')
+                self.incrementClock(1)
+
+            #begin looping through queue
             for i in range(0, len(self.queue)):
                 process = self.queue[i]
     
@@ -29,10 +41,10 @@ class RoundRobin:
 
                     #decrement remaining service time by difference of time quantum,
                     print(f'p{process.id} starting at {self.timeElapsed}')
-                    partialTimeQuantum = self.timeQuantum - process.remainingServiceTime
+                    partialTimeQuantum = process.remainingServiceTime
 
                     process.decrementRemainingServiceTime(partialTimeQuantum)
-                    self.incrementByQuantum(partialTimeQuantum)
+                    self.incrementClock(partialTimeQuantum)
 
                     print(f'p{process.id} ending at {self.timeElapsed}')
                     if process.remainingServiceTime == 0:
@@ -43,7 +55,7 @@ class RoundRobin:
                     print(f'p{process.id} starting at {self.timeElapsed}')
                     
                     process.decrementRemainingServiceTime(self.timeQuantum)
-                    self.incrementByQuantum(self.timeQuantum)
+                    self.incrementClock(self.timeQuantum)
 
                     #check for process ended
                     if process.remainingServiceTime == 0:
@@ -51,7 +63,7 @@ class RoundRobin:
                     print(f'p{process.id} ending at {self.timeElapsed} process has {process.remainingServiceTime} remaining')
 
                 if len(self.queue) > 1:
-                        self.incrementByContext()
+                        self.incrementClock(self.contextSwitch)
                         print(f'context switch ending at {self.timeElapsed}')
 
                 #pop from queue
@@ -76,7 +88,7 @@ class RoundRobin:
     def setProcesses(self, data):
         processes = []
         for process in data:
-            processes.append(Process(process["id"], process["servetime"], process["arrivaltime"]))
+            processes.append(Process(process["id"], process["serviceTime"], process["arrivalTime"]))
         return processes
 
     #enumerate queue, remove by id
@@ -85,12 +97,9 @@ class RoundRobin:
                 if process.id == id:
                     self.queue.pop(i)
                     break
-    
-    def incrementByQuantum(self, time):
+
+    def incrementClock(self, time):
         self.timeElapsed += time
-    
-    def incrementByContext(self):
-        self.timeElapsed += self.contextSwitch
 
     #create table using rich
     def createTable(self):
