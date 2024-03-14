@@ -8,6 +8,9 @@ class RoundRobin:
         self.contextSwitch = contextSwitch
         self.timeElapsed = 0
         self.queue = []
+        self.runningProcessId = -1
+        self.avgWaitTime = 0
+        self.avgTRDTime = 0
 
     #run round robin sequence
     def runRR(self):
@@ -78,17 +81,84 @@ class RoundRobin:
         for process in self.processes:
             process.calculateMetrics()
 
+        #calculate avagerages
+        self.setAvgerateWait()
+        self.setAverageTRDTime()
+
         #output results
-        self.createTable()
+        #self.createTable()
+        print(f'Trad RR - Avg Wait: {self.avgWaitTime} Avg TRD: {self.avgTRDTime}')
 
-    def runSQRR(self):
-        #set queue for arrived processes, sort based on ST / RST
+    def runHSQRR(self):
+        incomplete = True
 
-        #determine QT
-        #if time quantum -1, determine time quantum based on queue processes current burst times / 2
+        while incomplete:
+            #set queue for arrived processes, sort based on ST / RST
+            completedCount = 0
+            for process in self.processes:
+                if process.arrivalTime <= self.timeElapsed and process.queued == False:
+                    process.queued = True
+                    self.queue.append(process)
+                if process.remainingServiceTime == 0 and process.queued == True:
+                    completedCount+=1
+                if completedCount == len(self.processes):
+                    incomplete = False
+                    break
+
+
+            #increment idle clock
+            if len(self.queue) == 0:
+                #print('empty queue: time incremented')
+                self.incrementClock(1)
+
+            #sort by servicetime
+            self.queue.sort(key = lambda process : process.serviceTime)
+
+            #set time quantum to average of service times, rounded down
+            totalServiceTimes = 0
+            for process in self.queue:
+                totalServiceTimes += process.serviceTime
+            self.updateTimeQuantum(totalServiceTimes // 2)
+
+            #run processes in queue
+            for process in self.queue:
+
+                #determine computing time
+                timeToRun = min(process.remainingServiceTime, self.timeQuantum)
+
+                #switch context if necessary
+                if self.runningProcessId > 0 and process.id != self.runningProcessId:
+                    #print(f'context switched at {self.timeElapsed} to {self.timeElapsed + self.contextSwitch}')
+                    self.incrementClock(self.contextSwitch)
+
+                #update RST and clock
+                if process.startTime < 0:
+                    process.setStartTime(self.timeElapsed)
+                    #print(f'start time set for p{process.id} at {self.timeElapsed}')
+                #print(f'p{process.id} started at {self.timeElapsed} to run for {timeToRun}')
+                self.runningProcessId = (process.id)
+                process.decrementRemainingServiceTime(timeToRun)
+                self.incrementClock(timeToRun)
+                
+                #set end time for process
+                if process.remainingServiceTime == 0:
+                    process.setEndTime(self.timeElapsed)
+                    self.removeFromQueue(process.id)
+                    #print(f'p{process.id} popped from queue at {self.timeElapsed}')         
 
         #execute processes in queue and exit
-        return
+                    
+        #finally, loop over processes to update their data
+        for process in self.processes:
+            process.calculateMetrics()
+
+        #calculate avagerages
+        self.setAvgerateWait()
+        self.setAverageTRDTime()
+        
+        #output results
+        #self.createTable()
+        print(f'HSQRR - Avg Wait: {self.avgWaitTime} Avg TRD: {self.avgTRDTime}')
 
     #set queue, RR.queue holds the processes as they run whereas RR.processes contains all processes throughout the RR lifecycle
     def setQueue(self, processes):
@@ -103,6 +173,9 @@ class RoundRobin:
             processes.append(Process(process["id"], process["serviceTime"], process["arrivalTime"]))
         return processes
 
+    def updateTimeQuantum(self, quantum):
+        self.timeQuantum = quantum
+
     #enumerate queue, remove by id
     def removeFromQueue(self, id):
             for i, process in enumerate(self.queue):
@@ -112,6 +185,20 @@ class RoundRobin:
 
     def incrementClock(self, time):
         self.timeElapsed += time
+
+    def setAvgerateWait(self):
+        waitSum = 0
+        for process in self.processes:
+            waitSum+= process.totalWaitTime
+        avgWait = waitSum / len(self.processes)
+        self.avgWaitTime = avgWait
+    
+    def setAverageTRDTime(self):
+        trdSum = 0
+        for process in self.processes:
+            trdSum += process.turnAroundTime
+        avgTrd  = trdSum / len(self.processes)
+        self.avgTRDTime = avgTrd
 
     #create table using rich
     def createTable(self):
@@ -141,6 +228,7 @@ class RoundRobin:
         console.print(table)
     
 class Process:
+
     def __init__(self, id, serviceTime, arrivalTime):
         self.id = id
 
