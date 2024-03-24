@@ -2,7 +2,7 @@
 
 ## Description
 
-Exploring the Round Robin scheduling algorithm with Python.  
+A novel Hybrid Sliding Quantum Round Robin CPU scheduling algorithm that I created while exploring the traditional Round Robin scheduling algorithm with Python.  
 
 ## Table of Contents
 - [Results](#results)
