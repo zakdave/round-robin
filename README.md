@@ -1,8 +1,8 @@
-# Round Robin 
+# Round Robin and SQRR
 
 ## Description
 
-A novel Sliding Quantum Round Robin CPU scheduling algorithm that I created while exploring the traditional Round Robin scheduling algorithm with Python.  
+A novel Sliding Quantum Round Robin CPU scheduling algorithm created while exploring the traditional Round Robin scheduling algorithm with Python.  
 
 ## Table of Contents
 - [Traditional Results](#traditional-results)
