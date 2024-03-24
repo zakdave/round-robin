@@ -6,7 +6,7 @@ A novel Sliding Quantum Round Robin CPU scheduling algorithm that I created whil
 
 ## Table of Contents
 - [Traditional Results](#traditional-results)
-- [SQRR Preliminary Results](#sqrr-preliminary-results)
+- [A Novel SQRR](#a-novel-sqrr)
 - [SQRR Final Results](#sqrr-final-results)
 - [Drawbacks and Future Work](#drawbacks-and-future-work)
 - [Installation](#installation)
@@ -26,10 +26,9 @@ By itself, this is not very useful. Future revisions could look at comparing a r
 
 Round Robin serves as a FCFS algorithm by executing the inner loop of the of the queue. Different methods of implementation can create surprisingly different results. The first images shows a 0 context time, and a time quantum of 10. In Figure, p3 should switch to p4, however the loop breaks off and the queue restarts from the beginning. This behavior could be avoided by maintaining a circular queue on the Round Robin class. 
 
-## SQRR Preliminary Results
-![SQRR Results output](./results/sqrr-first-results.PNG)
+## A Novel SQRR 
 
-A novel algorithm was created and dubbed the Sliding Quantum Round Robin (SQRR). The need for this algorithm arose when noticing substantial waiting and turn around times. 
+A novel algorithm was created and dubbed the "Sliding Quantum Round Robin" (SQRR). The need for this algorithm arose when noticing substantial waiting and turn around times using randomly generated data with traditional round robin. 
 
 The SQRR is a traditional round robing utilizing two new improvements:
 
@@ -37,6 +36,7 @@ The SQRR is a traditional round robing utilizing two new improvements:
 
 2. Recalculating the quantum of each queue iteration based on an average of the process service times in the queue. If there is only one process in the queue, the quantum will not let the process finish on the first iteration because this could cause starvation to incoming processes if the executing process has an especially long service time. 
 
+![SQRR Results output](./results/sqrr-first-results.PNG)
 
 ## SQRR Final Results
 
