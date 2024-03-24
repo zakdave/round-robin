@@ -86,7 +86,7 @@ class RoundRobin:
         self.setAverageTRDTime()
 
         #output results
-        self.createTable()
+        #self.createTable()
         print(f'Trad RR - Avg Wait: {self.avgWaitTime} Avg TRD: {self.avgTRDTime}')
 
     def runHSQRR(self):
