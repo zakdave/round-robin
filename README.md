@@ -5,16 +5,16 @@
 Exploring the Round Robin scheduling algorithm with Python.  
 
 ## Table of Contents
-- [Results](#results)
+- [Traditional Results](#results)
 - [Installation](#installation)
 - [Usage](#usage)
 
-## Results
+## Traditional Results
 
 
 Results for TQ: 10, context switch 10  TQ: context switch: 2
 
-![Results output](./results/results.png)
+![Traditional Results output](./results/results.png)
 
 Note: This implementation checks the arrival time of each process before it starts and does not maintain a rotating queue. A copy of the processes is created by the setQueue method and each iteration of the inner loop checks if the process has arrived yet. Further revisions can be made to implement a rotating queue. This implementation works great at reducing intial wait time, but may sacrifice turn around time. 
 

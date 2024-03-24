@@ -86,7 +86,7 @@ class RoundRobin:
         self.setAverageTRDTime()
 
         #output results
-        #self.createTable()
+        self.createTable()
         print(f'Trad RR - Avg Wait: {self.avgWaitTime} Avg TRD: {self.avgTRDTime}')
 
     def runHSQRR(self):
@@ -95,6 +95,8 @@ class RoundRobin:
         while incomplete:
             #set queue for arrived processes, sort based on ST / RST
             completedCount = 0
+
+            #set queue & check for completion
             for process in self.processes:
                 if process.arrivalTime <= self.timeElapsed and process.queued == False:
                     process.queued = True
