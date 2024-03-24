@@ -16,7 +16,7 @@ roundRobin.runRR()
 
 #improvedSQRR
 roundRobin = RoundRobin(-1, data, 2)
-roundRobin.runHSQRR()
+roundRobin.runSQRR()
 
 
 

@@ -89,7 +89,7 @@ class RoundRobin:
         #self.createTable()
         print(f'Trad RR - Avg Wait: {self.avgWaitTime} Avg TRD: {self.avgTRDTime}')
 
-    def runHSQRR(self):
+    def runSQRR(self):
         incomplete = True
 
         while incomplete:
@@ -160,7 +160,7 @@ class RoundRobin:
         
         #output results
         #self.createTable()
-        print(f'HSQRR - Avg Wait: {self.avgWaitTime} Avg TRD: {self.avgTRDTime}')
+        print(f'SQRR - Avg Wait: {self.avgWaitTime} Avg TRD: {self.avgTRDTime}')
 
     #set queue, RR.queue holds the processes as they run whereas RR.processes contains all processes throughout the RR lifecycle
     def setQueue(self, processes):
