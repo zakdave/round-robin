@@ -32,9 +32,9 @@ for index, arrivalTime in enumerate(times["arrivalTimes"]):
     data.append(process)
 
 #given quantum 2, cs 0
-roundRobin = RoundRobin(2, data, 2)
+roundRobin = RoundRobin(2, data, 0)
 roundRobin.runRR()
 
 #run new sqrr
-sqrr = RoundRobin(-1, data, 2)
-sqrr.runSQRR()
+#sqrr = RoundRobin(-1, data, 2)
+#sqrr.runSQRR()
